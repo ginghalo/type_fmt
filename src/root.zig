@@ -34,7 +34,7 @@ pub fn type_fmt(comptime T: type, comptime fmt: str) Fmt {
     comptime var idx: usize = 0;
     comptime var end: usize = 0;
     @setEvalBranchQuota(fmt.len * 500);
-    comptime while (idx + end < fmt.len) : (end += 1) {
+    comptime while (idx + end < fmt.len) {
         if (fmt[idx + end] == '{') {
             fmtstr = fmtstr ++ fmt[idx..][0 .. end + 1];
             if (fmt[idx + end + 1] != '(') return error.@"Must have fieldname of T!";
@@ -64,9 +64,11 @@ pub fn type_fmt(comptime T: type, comptime fmt: str) Fmt {
             } else {
                 return error.@"Must have right format character!";
             }
+        } else {
+            end += 1;
         }
     };
-    comptime if (end > 1) {
+    comptime if (end > 0) {
         fmtstr = fmtstr ++ fmt[idx..][0..end];
     };
     return .{ .fmt = fmtstr, .t = t };
